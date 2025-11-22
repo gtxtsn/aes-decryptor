@@ -3,682 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desencriptador AES-256</title>
+    <title>Desencriptar</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            margin: 0;
             padding: 20px;
         }
-
-        .container {
+        .box {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            max-width: 700px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
             width: 100%;
         }
-
         h1 {
             color: #667eea;
-            margin-bottom: 10px;
-            font-size: 28px;
-            text-align: center;
-        }
-
-        .subtitle {
-            color: #666;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 14px;
         }
-
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input, textarea {
+        input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
         }
-
-        input:focus, textarea:focus {
+        input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .btn {
+        button {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 15px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        button:hover {
+            background: #5568d3;
         }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            display: none;
-        }
-
-        .result.success {
-            background: #d4edda;
-            border-left-color: #28a745;
-            display: block;
-        }
-
-        .result.error {
-            background: #f8d7da;
-            border-left-color: #dc3545;
-            display: block;
-        }
-
-        .result-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .result-content {
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 5px;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .copy-btn {
-            background: #28a745;
-            padding: 8px 15px;
-            margin-top: 10px;
-            width: auto;
-            font-size: 14px;
-        }
-
-        .copy-btn:hover {
-            background: #218838;
-        }
-
-        .qr-section {
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .qr-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .qr-btn {
-            flex: 1;
-            padding: 12px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .qr-btn:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-        }
-
-        #qrFileInput, #cameraInput {
-            display: none;
-        }
-
-        #qrCanvas {
-            display: none;
-        }
-
-        .camera-container {
-            position: relative;
-            margin-top: 15px;
-            border-radius: 10px;
-            overflow: hidden;
-            display: none;
-            max-width: 100%;
-        }
-
-        .camera-container.active {
-            display: block;
-        }
-
-        #qrVideo {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 10px;
-        }
-
-        .scanning-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: 600;
-        }
-
-        .qr-preview {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            display: none;
-            word-break: break-all;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .qr-preview.active {
-            display: block;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            color: #667eea;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        #qrCodeContainer {
-            text-align: center;
+        #result {
             margin-top: 20px;
             padding: 20px;
-            background: white;
-            border-radius: 10px;
-            border: 2px dashed #667eea;
-            display: none;
-        }
-
-        #qrCodeContainer.active {
-            display: block;
-        }
-
-        #qrcode {
-            display: inline-block;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-        }
-
-        .url-display {
-            margin-top: 15px;
-            padding: 12px;
-            background: #f8f9fa;
+            background: #d4edda;
             border-radius: 8px;
+            display: none;
             word-break: break-all;
-            font-size: 12px;
-            font-family: 'Courier New', monospace;
-            color: #666;
         }
-
-        .download-btn {
-            background: #28a745;
-            margin-top: 15px;
-            width: auto;
-            padding: 10px 20px;
-            display: inline-block;
+        .error {
+            background: #f8d7da !important;
+            color: #721c24;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔓 Desencriptador AES-256</h1>
-        <p class="subtitle">CryptoJS Standard (con salt/IV automático)</p>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('decrypt')">🔓 Desencriptar</button>
-            <button class="tab" onclick="switchTab('encrypt')">🔐 Encriptar y Generar QR</button>
-        </div>
-
-        <!-- TAB DESENCRIPTAR -->
-        <div id="decryptTab" class="tab-content active">
-
-        <div class="info-box">
-            ℹ️ <strong>Nota:</strong> En CryptoJS estándar, el salt y IV se generan automáticamente y están incluidos en el texto cifrado. Solo necesitas el texto cifrado y la contraseña.
-        </div>
-
-        <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
-            🔗 <strong>Tip para QR:</strong> Genera un QR con esta URL para cargar automáticamente el texto cifrado:<br>
-            <code id="urlExample" style="font-size: 11px; word-break: break-all;">https://tusitio.com/?data=TEXTO_CIFRADO_AQUI</code>
-        </div>
-
-        <div class="qr-section">
-            <label>📷 Cargar datos desde código QR:</label>
-            <div class="qr-buttons">
-                <button class="qr-btn" onclick="openCamera()">📸 Escanear con Cámara</button>
-                <button class="qr-btn" onclick="document.getElementById('qrFileInput').click()">🖼️ Cargar Imagen QR</button>
-            </div>
-            <input type="file" id="qrFileInput" accept="image/*" onchange="loadQRFromFile(event)">
-            
-            <div class="camera-container" id="cameraContainer">
-                <video id="qrVideo" autoplay playsinline></video>
-                <div class="scanning-indicator">🔍 Escaneando...</div>
-            </div>
-            
-            <div class="qr-preview" id="qrPreview">
-                <strong>Datos del QR:</strong><br>
-                <span id="qrData"></span>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label for="encrypted">Texto Cifrado (Base64):</label>
-            <textarea id="encrypted" placeholder="U2FsdGVkX1+abc123..."></textarea>
-        </div>
-
-        <div class="input-group">
-            <label for="password">Contraseña / Clave:</label>
-            <input type="password" id="password" placeholder="Tu contraseña secreta">
-        </div>
-
-        <button class="btn" onclick="decrypt()">🔓 Desencriptar</button>
-
-        <div id="result" class="result">
-            <div class="result-title">Resultado:</div>
-            <div class="result-content" id="resultContent"></div>
-            <button class="btn copy-btn" onclick="copyResult()">📋 Copiar Resultado</button>
-        </div>
-        </div>
-
-        <!-- TAB ENCRIPTAR -->
-        <div id="encryptTab" class="tab-content">
-            <div class="info-box">
-                ℹ️ Genera un mensaje encriptado y un código QR listo para imprimir o compartir.
-            </div>
-
-            <div class="input-group">
-                <label for="messageToEncrypt">Mensaje a Encriptar:</label>
-                <textarea id="messageToEncrypt" placeholder="Escribe el mensaje que quieres proteger..."></textarea>
-            </div>
-
-            <div class="input-group">
-                <label for="encryptPassword">Contraseña:</label>
-                <input type="password" id="encryptPassword" placeholder="Crea una contraseña segura">
-            </div>
-
-            <div class="input-group">
-                <label for="siteUrl">URL de tu sitio (opcional):</label>
-                <input type="text" id="siteUrl" placeholder="https://tuusuario.github.io/aes-decryptor" value="">
-            </div>
-
-            <button class="btn" onclick="encryptMessage()">🔐 Encriptar y Generar QR</button>
-
-            <div id="qrCodeContainer">
-                <h3 style="color: #667eea; margin-bottom: 15px;">✅ ¡QR Generado!</h3>
-                <div id="qrcode"></div>
-                <div class="url-display" id="generatedUrl"></div>
-                <p style="margin-top: 15px; color: #666; font-size: 14px;">
-                    <strong>Texto Cifrado:</strong><br>
-                    <span id="encryptedText" style="word-break: break-all; font-family: 'Courier New', monospace;"></span>
-                </p>
-                <button class="btn download-btn" onclick="downloadQR()">⬇️ Descargar QR</button>
-            </div>
-        </div>
+    <div class="box">
+        <h1>🔓 Desencriptar</h1>
+        <input type="password" id="password" placeholder="Ingresa la contraseña" autofocus>
+        <button onclick="decrypt()">Desencriptar</button>
+        <div id="result"></div>
     </div>
 
-    <canvas id="qrCanvas" style="display: none;"></canvas>
-
     <script>
-        let stream = null;
-        let scanning = false;
+        // Obtener datos del QR desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const encrypted = urlParams.get('data');
 
-        // Cargar datos desde URL al iniciar
+        // Esperar a que cargue el DOM
         window.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const encryptedData = urlParams.get('data');
-            
-            if (encryptedData) {
-                document.getElementById('encrypted').value = decodeURIComponent(encryptedData);
-                showQRPreview(decodeURIComponent(encryptedData));
-                // Enfocar el campo de contraseña para facilitar el uso
-                document.getElementById('password').focus();
+            if (!encrypted) {
+                document.querySelector('.box').innerHTML = '<h1 style="color:#dc3545">❌ No hay datos</h1><p style="text-align:center">Escanea un código QR válido</p>';
+                return;
             }
 
-            // Detectar URL actual para el generador
-            const currentUrl = window.location.origin + window.location.pathname;
-            document.getElementById('siteUrl').value = currentUrl;
+            // Permitir desencriptar con Enter
+            const passwordInput = document.getElementById('password');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') decrypt();
+                });
+            }
         });
-
-        // Cambiar entre tabs
-        function switchTab(tabName) {
-            // Actualizar tabs
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            if (tabName === 'decrypt') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('decryptTab').classList.add('active');
-            } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('encryptTab').classList.add('active');
-            }
-        }
-
-        // Encriptar mensaje
-        function encryptMessage() {
-            const message = document.getElementById('messageToEncrypt').value.trim();
-            const password = document.getElementById('encryptPassword').value;
-            const siteUrl = document.getElementById('siteUrl').value.trim();
-
-            if (!message) {
-                alert('Por favor ingresa un mensaje para encriptar');
-                return;
-            }
-
-            if (!password) {
-                alert('Por favor ingresa una contraseña');
-                return;
-            }
-
-            try {
-                // Encriptar con CryptoJS
-                const encrypted = CryptoJS.AES.encrypt(message, password).toString();
-                
-                // Generar URL
-                let qrUrl = encrypted;
-                if (siteUrl) {
-                    qrUrl = siteUrl + '?data=' + encodeURIComponent(encrypted);
-                }
-
-                // Mostrar texto cifrado
-                document.getElementById('encryptedText').textContent = encrypted;
-                document.getElementById('generatedUrl').textContent = qrUrl;
-
-                // Limpiar QR anterior si existe
-                document.getElementById('qrcode').innerHTML = '';
-
-                // Generar nuevo QR
-                new QRCode(document.getElementById('qrcode'), {
-                    text: qrUrl,
-                    width: 256,
-                    height: 256,
-                    colorDark: '#000000',
-                    colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-
-                // Mostrar contenedor
-                document.getElementById('qrCodeContainer').classList.add('active');
-
-            } catch (error) {
-                alert('Error al encriptar: ' + error.message);
-            }
-        }
-
-        // Descargar QR
-        function downloadQR() {
-            const canvas = document.querySelector('#qrcode canvas');
-            if (canvas) {
-                const url = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.download = 'qr-encrypted-message.png';
-                link.href = url;
-                link.click();
-            }
-        }
-
-        // Escanear QR desde archivo
-        function loadQRFromFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.getElementById('qrCanvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    
-                    if (code) {
-                        document.getElementById('encrypted').value = code.data;
-                        showQRPreview(code.data);
-                    } else {
-                        showError('No se encontró un código QR válido en la imagen');
-                    }
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Abrir cámara para escanear
-        async function openCamera() {
-            const container = document.getElementById('cameraContainer');
-            const video = document.getElementById('qrVideo');
-
-            if (scanning) {
-                stopCamera();
-                return;
-            }
-
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                video.srcObject = stream;
-                container.classList.add('active');
-                scanning = true;
-                scanQRFromCamera();
-            } catch (err) {
-                showError('No se pudo acceder a la cámara: ' + err.message);
-            }
-        }
-
-        // Escanear QR desde cámara en tiempo real
-        function scanQRFromCamera() {
-            const video = document.getElementById('qrVideo');
-            const canvas = document.getElementById('qrCanvas');
-            const ctx = canvas.getContext('2d');
-
-            function tick() {
-                if (!scanning) return;
-
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    
-                    if (code) {
-                        document.getElementById('encrypted').value = code.data;
-                        showQRPreview(code.data);
-                        stopCamera();
-                        return;
-                    }
-                }
-                
-                requestAnimationFrame(tick);
-            }
-            
-            tick();
-        }
-
-        // Detener cámara
-        function stopCamera() {
-            scanning = false;
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            document.getElementById('cameraContainer').classList.remove('active');
-        }
-
-        // Mostrar vista previa del QR
-        function showQRPreview(data) {
-            const preview = document.getElementById('qrPreview');
-            const qrData = document.getElementById('qrData');
-            qrData.textContent = data.substring(0, 100) + (data.length > 100 ? '...' : '');
-            preview.classList.add('active');
-        }
 
         function decrypt() {
-            const encrypted = document.getElementById('encrypted').value.trim();
             const password = document.getElementById('password').value;
-            const resultDiv = document.getElementById('result');
-            const resultContent = document.getElementById('resultContent');
-
-            // Validaciones
-            if (!encrypted) {
-                showError('Por favor ingresa el texto cifrado');
-                return;
-            }
+            const result = document.getElementById('result');
 
             if (!password) {
-                showError('Por favor ingresa la contraseña');
+                result.innerHTML = '❌ Ingresa la contraseña';
+                result.className = 'error';
+                result.style.display = 'block';
                 return;
             }
 
             try {
-                // Desencriptar usando CryptoJS
                 const decrypted = CryptoJS.AES.decrypt(encrypted, password);
-                const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+                const text = decrypted.toString(CryptoJS.enc.Utf8);
 
-                if (!decryptedText) {
-                    showError('Desencriptación fallida. Verifica que la contraseña sea correcta y el texto cifrado esté completo.');
-                    return;
+                if (!text) {
+                    result.innerHTML = '❌ Contraseña incorrecta';
+                    result.className = 'error';
+                } else {
+                    result.innerHTML = '<strong>✅ Mensaje:</strong><br><br>' + text;
+                    result.className = '';
                 }
-
-                // Mostrar resultado exitoso
-                resultDiv.className = 'result success';
-                resultContent.textContent = decryptedText;
-
+                result.style.display = 'block';
             } catch (error) {
-                showError('Error al desencriptar: ' + error.message);
+                result.innerHTML = '❌ Error al desencriptar';
+                result.className = 'error';
+                result.style.display = 'block';
             }
         }
-
-        function showError(message) {
-            const resultDiv = document.getElementById('result');
-            const resultContent = document.getElementById('resultContent');
-            resultDiv.className = 'result error';
-            resultContent.textContent = '❌ ' + message;
-        }
-
-        function copyResult() {
-            const resultContent = document.getElementById('resultContent').textContent;
-            navigator.clipboard.writeText(resultContent).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✓ Copiado!';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
-            });
-        }
-
-        // Permitir desencriptar con Enter
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                decrypt();
-            }
-        });
     </script>
 </body>
 </html>
